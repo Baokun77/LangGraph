@@ -10,6 +10,7 @@ import { ChatOpenAI } from "@langchain/openai";
 import { HumanMessage, AIMessage } from "@langchain/core/messages";
 import { ToolNode } from "@langchain/langgraph/prebuilt";
 import { StateGraph, MessagesAnnotation } from "@langchain/langgraph";
+import { ObsTracer } from "./obs_tracer.mts";
 
 // Define the tools for the agent to use
 const tools = [new TavilySearchResults({ maxResults: 3 })];
@@ -20,6 +21,9 @@ const model = new ChatOpenAI({
   model: "gpt-4o-mini",
   temperature: 0,
 });
+
+// Initialize observability tracer
+const tracer = new ObsTracer();
 
 // ReAct Pattern: Node1 - Think (分析问题并决定下一步行动)
 async function think(state: typeof MessagesAnnotation.State) {
@@ -117,11 +121,16 @@ function shouldContinue({ messages }: typeof MessagesAnnotation.State) {
   return "think";
 }
 
+// Wrap nodes with observability tracer
+const wrappedThink = tracer.wrapNode(think, 'think', 'react');
+const wrappedAct = tracer.wrapNode(act, 'act', 'react');
+const wrappedObserve = tracer.wrapNode(observe, 'observe', 'react');
+
 // Define ReAct graph with three nodes
 const workflow = new StateGraph(MessagesAnnotation)
-  .addNode("think", think)          // Node1: Think (分析问题并决定下一步行动)
-  .addNode("act", act)              // Node2: Act (执行确定的行动)
-  .addNode("observe", observe)      // Node3: Observe (处理行动结果)
+  .addNode("think", wrappedThink)          // Node1: Think (分析问题并决定下一步行动)
+  .addNode("act", wrappedAct)              // Node2: Act (执行确定的行动)
+  .addNode("observe", wrappedObserve)      // Node3: Observe (处理行动结果)
   .addEdge("__start__", "think")    // Start with thinking
   .addEdge("think", "act")          // Think -> Act
   .addEdge("act", "observe")        // Act -> Observe

@@ -8,12 +8,16 @@ process.env.OPENAI_API_KEY = "your-openai-api-key-here";
 import { ChatOpenAI } from "@langchain/openai";
 import { HumanMessage, AIMessage } from "@langchain/core/messages";
 import { StateGraph, MessagesAnnotation } from "@langchain/langgraph";
+import { ObsTracer } from "./obs_tracer.mts";
 
 // Create model for ToT reasoning
 const model = new ChatOpenAI({
   model: "gpt-4o-mini",
   temperature: 0.7,
 });
+
+// Initialize observability tracer
+const tracer = new ObsTracer();
 
 // Node 1: Expand - Generate multiple candidate solutions
 async function expand(state: typeof MessagesAnnotation.State) {
@@ -185,11 +189,16 @@ function shouldContinue(state: typeof MessagesAnnotation.State) {
   return "expand";
 }
 
+// Wrap nodes with observability tracer
+const wrappedExpand = tracer.wrapNode(expand, 'expand', 'tot');
+const wrappedEvaluate = tracer.wrapNode(evaluate, 'evaluate', 'tot');
+const wrappedSelect = tracer.wrapNode(select, 'select', 'tot');
+
 // Define ToT graph with three nodes
 const workflow = new StateGraph(MessagesAnnotation)
-  .addNode("expand", expand)        // Node1: Expand (generate multiple candidates)
-  .addNode("evaluate", evaluate)    // Node2: Evaluate (score and filter)
-  .addNode("select", select)        // Node3: Select (choose best)
+  .addNode("expand", wrappedExpand)        // Node1: Expand (generate multiple candidates)
+  .addNode("evaluate", wrappedEvaluate)    // Node2: Evaluate (score and filter)
+  .addNode("select", wrappedSelect)        // Node3: Select (choose best)
   .addEdge("__start__", "expand")   // Start with expanding
   .addConditionalEdges("expand", shouldContinue)    // Expand -> Evaluate
   .addConditionalEdges("evaluate", shouldContinue)  // Evaluate -> Select

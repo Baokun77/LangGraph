@@ -11,6 +11,7 @@ import { ChatOpenAI } from "@langchain/openai";
 import { HumanMessage, AIMessage } from "@langchain/core/messages";
 import { ToolNode } from "@langchain/langgraph/prebuilt";
 import { StateGraph, MessagesAnnotation } from "@langchain/langgraph";
+import { ObsTracer } from "./obs_tracer.mts";
 
 // Global memory that persists across conversations
 let globalMemory: string[] = [];
@@ -24,6 +25,9 @@ const model = new ChatOpenAI({
   model: "gpt-4o-mini",
   temperature: 0,
 });
+
+// Initialize observability tracer
+const tracer = new ObsTracer();
 
 // Node 1: Think - Analyze problem and decide action
 async function think(state: typeof MessagesAnnotation.State) {
@@ -164,11 +168,16 @@ function shouldContinue(state: typeof MessagesAnnotation.State) {
   return "think";
 }
 
+// Wrap nodes with observability tracer
+const wrappedThink = tracer.wrapNode(think, 'think', 'reflect');
+const wrappedAct = tracer.wrapNode(act, 'act', 'reflect');
+const wrappedReflect = tracer.wrapNode(reflect, 'reflect', 'reflect');
+
 // Define Reflect graph with three nodes
 const workflow = new StateGraph(MessagesAnnotation)
-  .addNode("think", think)          // Node1: Think (analyze and decide)
-  .addNode("act", act)              // Node2: Act (execute action)
-  .addNode("reflect", reflect)      // Node3: Reflect (evaluate output)
+  .addNode("think", wrappedThink)          // Node1: Think (analyze and decide)
+  .addNode("act", wrappedAct)              // Node2: Act (execute action)
+  .addNode("reflect", wrappedReflect)      // Node3: Reflect (evaluate output)
   .addEdge("__start__", "think")    // Start with thinking
   .addEdge("think", "act")          // Think -> Act
   .addEdge("act", "reflect")        // Act -> Reflect

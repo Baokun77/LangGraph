@@ -1,0 +1,4 @@
+run_id,agent_type,step_idx,node_name,input_summary,observation_summary,tool_name,latency_ms,prompt_tokens,completion_tokens,cost_usd,errors,timestamp
+c6600dfa-c383-4947-8c89-3b0a53b4d0a1,react,1,think,"[""What is the weather in San Francisco?""]","""I need to search for information about: What is the weather in San Francisco?""",,115,10,16,0.000011099999999999999,"",2025-10-14T03:44:02.500Z
+c6600dfa-c383-4947-8c89-3b0a53b4d0a1,react,2,act,"[""What is the weather in San Francisco?""]","""Search results: Found 3 relevant articles about What is the weather in San Francisco?""",,215,10,18,0.0000123,"",2025-10-14T03:44:02.716Z
+c6600dfa-c383-4947-8c89-3b0a53b4d0a1,react,3,observe,"[""What is the weather in San Francisco?""]","""Based on the search results, here's the answer about What is the weather in San Francisco?""",,60,10,20,0.0000135,"",2025-10-14T03:44:02.777Z

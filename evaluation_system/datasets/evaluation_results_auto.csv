@@ -1,0 +1,13 @@
+Task ID,Task Type,Question,Agent,Success,Response,Exact Match,Citation Hit,Tool Invoked,Fields Present,Within Tolerance,Reasoning Correct,Key Steps Found,Intermediate Values Found,Inference Time,Error
+1,"factual","What is the capital of France?","ReAct",false,"",false,false,false,false,false,false,"","",0.248,"401 Incorrect API key provided: your-ope************here. You can find your API key at https://platform.openai.com/account/api-keys.
+
+Troubleshooting URL: https://js.langchain.com/docs/troubleshooting/errors/MODEL_AUTHENTICATION/
+"
+2,"factual","Who wrote the novel '1984'?","ReAct",false,"",false,false,false,false,false,false,"","",0.108,"401 Incorrect API key provided: your-ope************here. You can find your API key at https://platform.openai.com/account/api-keys.
+
+Troubleshooting URL: https://js.langchain.com/docs/troubleshooting/errors/MODEL_AUTHENTICATION/
+"
+3,"factual","What is the largest planet in our solar system?","ReAct",false,"",false,false,false,false,false,false,"","",0.063,"401 Incorrect API key provided: your-ope************here. You can find your API key at https://platform.openai.com/account/api-keys.
+
+Troubleshooting URL: https://js.langchain.com/docs/troubleshooting/errors/MODEL_AUTHENTICATION/
+"

@@ -114,3 +114,17 @@ Thumbs.db
 *.key
 *.pem
 secrets/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Deno cache
+deno.lock
+
+# Ablation study results
+runs/
+*.jsonl

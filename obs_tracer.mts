@@ -1,8 +1,8 @@
 import Database from 'better-sqlite3';
 import { encoding_for_model } from 'tiktoken';
 import { v4 as uuidv4 } from 'uuid';
-import { writeFileSync, mkdirSync, existsSync } from 'fs';
-import { join } from 'path';
+import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
 
 interface TraceData {
   run_id: string;
